@@ -57,12 +57,13 @@ class MainActivity : AppCompatActivity() {
         val client = TruenasCertificateManagerClient(baseContext)
         val chain = client.getCertificateChain()
         val remaining = client.getRemainingDays()
+
         withContext(Dispatchers.Main) {
             if (remaining.isSuccess) {
                 val remaining: Int = remaining.getOrNull()!!
                 val requiredCertLifetime = PreferenceManager.getDefaultSharedPreferences(baseContext).getString("required_cert_lifetime", "0")!!.toInt()
 
-                binding.textStatus.text = "%d days remaining".format(remaining)
+                binding.textStatus.text = getString(R.string.days_remaining).format(remaining)
                 if (remaining >= requiredCertLifetime) {
                     binding.textStatus.setTextColor(getColor(R.color.darkgreen))
                 } else {
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 binding.btnRenew.isEnabled = true
             } else {
-                binding.textStatus.text = "Cannot connect to CA!"
+                binding.textStatus.setText(R.string.cannot_connect_to_ca)
                 binding.textStatus.setTextColor(Color.RED)
                 binding.btnRenew.isEnabled = false
             }
