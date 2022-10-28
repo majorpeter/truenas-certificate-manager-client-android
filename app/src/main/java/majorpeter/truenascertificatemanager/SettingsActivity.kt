@@ -38,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
             // no way to do it in xml: https://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android
             findPreference<EditTextPreference>("required_cert_lifetime")?.setOnBindEditTextListener {
                 it.inputType = EditorInfo.TYPE_CLASS_NUMBER
+                it.setSelection(it.text.length)
             }
         }
     }

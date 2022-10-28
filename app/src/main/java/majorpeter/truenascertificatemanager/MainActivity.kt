@@ -7,6 +7,7 @@ import android.security.KeyChain
 import android.security.KeyChainAliasCallback
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import majorpeter.truenascertificatemanager.databinding.ActivityMainBinding
-import java.io.FileNotFoundException
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,17 +35,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            updateRemaining()
+            updateCertInfo()
         }
     }
 
-    private suspend fun updateRemaining() {
-        val client = TruenasCertificateManagerClient(baseContext)
-        val chain = client.getCertificateChain()
+    override fun onRestart() {
+        super.onRestart()
+        CoroutineScope(Dispatchers.IO).launch {
+            updateCertInfo()
+        }
+    }
+
+    private suspend fun updateCertInfo() {
         withContext(Dispatchers.Main) {
-            binding.textCertData.text = chain[0].toString()
+            binding.loadingPanel.visibility = View.VISIBLE
+            binding.textStatus.text = ""
+            binding.textCertData.text = ""
+            binding.btnRenew.visibility = View.INVISIBLE
         }
 
+        val client = TruenasCertificateManagerClient(baseContext)
+        val chain = client.getCertificateChain()
         val remaining = client.getRemainingDays()
         withContext(Dispatchers.Main) {
             if (remaining.isSuccess) {
@@ -64,6 +74,9 @@ class MainActivity : AppCompatActivity() {
                 binding.textStatus.setTextColor(Color.RED)
                 binding.btnRenew.isEnabled = false
             }
+            binding.textCertData.text = chain[0].toString()
+            binding.btnRenew.visibility = View.VISIBLE
+            binding.loadingPanel.visibility = View.GONE
         }
     }
 
@@ -77,22 +90,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 return true
             }
             R.id.action_show_certs -> {
-                KeyChain.choosePrivateKeyAlias(this, KeyChainAliasCallback { _: String? -> {} }, arrayOf<String>(), null, null, null)
+                KeyChain.choosePrivateKeyAlias(this, KeyChainAliasCallback { {} }, arrayOf<String>(), null, null, null)
                 return true
             }
             else -> super.onOptionsItemSelected(item)
