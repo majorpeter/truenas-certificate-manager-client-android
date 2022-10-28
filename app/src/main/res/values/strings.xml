@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Truenas Certificate Manager</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_show_certs">Show Certificates</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preferences -->
+    <string name="ca_domain_name">CA Domain Name</string>
+    <string name="required_cert_lifetime">Required Certificate Lifetime</string>
+</resources>
