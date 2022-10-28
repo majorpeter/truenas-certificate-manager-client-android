@@ -9,4 +9,8 @@
     <!-- Preferences -->
     <string name="ca_domain_name">CA Domain Name</string>
     <string name="required_cert_lifetime">Required Certificate Lifetime</string>
+
+    <string name="certificate_renew_reminder">Certificate Renew Reminders</string>
+    <string name="cert_about_to_expire">Certificate is about to Expire!</string>
+    <string name="cert_expires_in_n_days">Certificate expires in %d days. Renew now!</string>
 </resources>
