@@ -24,15 +24,17 @@ class TruenasCertificateManagerClient(private val context: Context) {
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(arrayOf(CertificateHelper(context).getKeyManager()), null, null)
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val caDomain = prefs.getString("ca_domain_name", "")
-
-        val url = URL("https://$caDomain$path")
+        val url = URL("https://" + getCaDomainName() + path)
         with(url.openConnection() as HttpsURLConnection) {
             requestMethod = _requestMethod
             sslSocketFactory = sslContext.socketFactory
 
             return inputStream.readBytes()
         }
+    }
+
+    fun getCaDomainName(): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        return prefs.getString("ca_domain_name", "") as String
     }
 }

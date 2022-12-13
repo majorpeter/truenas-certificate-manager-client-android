@@ -14,13 +14,13 @@ class CertificateHelper(private val context: Context) {
         const val certificateAlias = "tnscm"
     }
 
-    fun getCertificateChain(): Array<X509Certificate> {
-        return KeyChain.getCertificateChain(context, certificateAlias) as Array<X509Certificate>
+    fun getCertificateChain(): Array<X509Certificate>? {
+        return KeyChain.getCertificateChain(context, certificateAlias)
     }
 
     fun getRemainingDays(): Result<Int> {
         val chain = getCertificateChain()
-        if (chain.isEmpty()) {
+        if (chain == null || chain.isEmpty()) {
             return Result.failure(java.lang.Exception("No certificates"))
         }
 
@@ -61,7 +61,7 @@ class CertificateHelper(private val context: Context) {
             }
 
             override fun getCertificateChain(_alias: String?): Array<X509Certificate> {
-                return getCertificateChain()
+                return getCertificateChain() as Array<X509Certificate>
             }
 
             override fun getPrivateKey(_alias: String?): PrivateKey {

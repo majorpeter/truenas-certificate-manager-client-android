@@ -63,7 +63,8 @@ class MainActivity : AppCompatActivity() {
             binding.btnRenew.visibility = View.INVISIBLE
         }
 
-        val chain = CertificateHelper(this).getCertificateChain()
+        val helper = CertificateHelper(this)
+        val chain = helper.getCertificateChain()
         val client = TruenasCertificateManagerClient(this)
         val remaining = client.getRemainingDays()
 
@@ -80,11 +81,20 @@ class MainActivity : AppCompatActivity() {
                 }
                 binding.btnRenew.isEnabled = true
             } else {
-                binding.textStatus.setText(R.string.cannot_connect_to_ca)
+                if (client.getCaDomainName().isNotEmpty()) {
+                    binding.textStatus.setText(R.string.cannot_connect_to_ca)
+                } else {
+                    binding.textStatus.setText(R.string.ca_domain_not_set)
+                }
                 binding.textStatus.setTextColor(Color.RED)
                 binding.btnRenew.isEnabled = false
             }
-            binding.textCertData.text = chain[0].toString()
+
+            if (chain != null) {
+                binding.textCertData.text = chain[0].toString()
+            } else {
+                binding.textCertData.text = "Error!"
+            }
             binding.btnRenew.visibility = View.VISIBLE
             binding.loadingPanel.visibility = View.GONE
         }
@@ -131,7 +141,13 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_show_certs -> {
-                KeyChain.choosePrivateKeyAlias(this, KeyChainAliasCallback { run {} }, arrayOf<String>(), null, null, null)
+                KeyChain.choosePrivateKeyAlias(this, KeyChainAliasCallback {
+                    if (it != null) {
+                        Log.i(TAG, "Selected cert: '%s'".format(it))
+                    } else {
+                        Log.i(TAG, "No cert selected")
+                    }
+                }, arrayOf<String>(), null, null, null)
                 return true
             }
             else -> super.onOptionsItemSelected(item)
