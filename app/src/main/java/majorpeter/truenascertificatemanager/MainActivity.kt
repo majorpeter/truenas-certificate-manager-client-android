@@ -63,9 +63,9 @@ class MainActivity : AppCompatActivity() {
             binding.btnRenew.visibility = View.INVISIBLE
         }
 
-        val helper = CertificateHelper(this)
+        val helper = CertificateHelper(applicationContext)
         val chain = helper.getCertificateChain()
-        val client = TruenasCertificateManagerClient(this)
+        val client = TruenasCertificateManagerClient(applicationContext)
         val remaining = client.getRemainingDays()
 
         withContext(Dispatchers.Main) {
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun renewCert() {
-        val client = TruenasCertificateManagerClient(baseContext)
+        val client = TruenasCertificateManagerClient(applicationContext)
         val pfxData = client.renewCert()    //TODO error handling
 
         val intent: Intent = KeyChain.createInstallIntent()

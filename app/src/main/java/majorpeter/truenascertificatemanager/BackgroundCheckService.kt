@@ -20,7 +20,7 @@ class BackgroundCheckService: JobService() {
 
     private fun doBackgroundWork(params: JobParameters?) {
         Thread(Runnable {
-            val remainingDays = CertificateHelper(this).getRemainingDays()
+            val remainingDays = CertificateHelper(applicationContext).getRemainingDays()
             val requiredCertLifetime = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("required_cert_lifetime", "0")!!.toInt()
 
